@@ -8,6 +8,7 @@ router.register(r'users', CustomUserViewSet, basename='user')
 
 urlpatterns = [
     path('register/', CustomUserViewSet.as_view({'post': 'register'}), name='register'),
+    path('login/', CustomUserViewSet.as_view({'post': 'login'}), name='login'),
     path('profile/', CustomUserViewSet.as_view({'get': 'profile'}), name='profile'),
     path('profile/edit/', CustomUserViewSet.as_view({'put': 'update_profile', 'patch': 'update_profile'}), name='edit_profile'),
     path('auth/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
