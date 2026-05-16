@@ -1,9 +1,10 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}Stół gracza - Roll The Dice RPG{% endblock %}
 
 {% block content %}
-<section class="page-head split-head">
+<section class="page-head split-head dashboard-head">
     <div>
         <p class="eyebrow">Stół gracza</p>
         <h1>Twój pulpit RPG</h1>
@@ -19,146 +20,260 @@
     </div>
 </section>
 
-<section class="dashboard-grid">
-    <div class="panel active-character-panel">
-        <div class="panel-head">
-            <h2>Aktywna postać</h2>
-            <span>Ostatnio zmieniona</span>
-        </div>
-        {% if active_character %}
-            <article class="featured-character">
-                <p>{{ active_character.ruleset.name }}</p>
-                <h2>{{ active_character.name }}</h2>
-                <div class="sheet-grid compact-sheet">
-                    {% for field in active_character.sheet_fields %}
-                        <div class="sheet-stat">
-                            <span>{{ field.label }}</span>
-                            <strong>{{ field.value }}</strong>
-                        </div>
-                    {% empty %}
-                        <p class="muted">Uzupełnij kartę, żeby widzieć najważniejsze pola tutaj.</p>
-                    {% endfor %}
-                </div>
-                <div class="actions">
-                    <a class="button button-small" href="{% url 'character-detail' active_character.pk %}">Otwórz kartę</a>
-                    <a class="button button-small button-ghost" href="{% url 'character-edit' active_character.pk %}">Edytuj</a>
-                </div>
-            </article>
-        {% else %}
-            <div class="empty-state">
-                <strong>Wykonaj pierwszy krok.</strong>
-                <p>Utwórz postać, a ten panel zamieni się w szybką kartę przy stole.</p>
-                <a class="button button-small" href="{% url 'character-create' %}">Utwórz pierwszą postać</a>
-            </div>
-        {% endif %}
-    </div>
-
-    {% if request.user.is_game_master %}
-        <div class="panel gm-panel">
+<section class="dashboard-shell">
+    <div class="dashboard-overview">
+        <div class="panel panel-feature dashboard-main-panel">
             <div class="panel-head">
-                <h2>Panel Mistrza Gry</h2>
-                <span>Kampanie</span>
+                <h2>Aktywna postać</h2>
+                <span>Ostatnio zmieniona</span>
             </div>
-            <p class="muted">Twórz kampanie, porządkuj postacie i przygotuj miejsce pod przyszłe sceny, NPC oraz notatki MG.</p>
-            <a class="button button-small" href="{% url 'campaign-create' %}">Nowa kampania</a>
-        </div>
-    {% endif %}
-
-    <div class="panel panel-primary">
-        <div class="panel-head">
-            <h2>Moje postacie</h2>
-            <span>{{ characters|length }}</span>
-        </div>
-        <div class="stack">
-            {% for character in characters %}
-                <article class="item item-link">
-                    <a href="{% url 'character-detail' character.pk %}">
-                        <strong>{{ character.name }}</strong>
-                        <p>{{ character.ruleset.name }}</p>
-                    </a>
-                    {% if character.campaign %}
-                        <span class="pill">{{ character.campaign.name }}</span>
-                    {% endif %}
-                </article>
-            {% empty %}
+            {% if active_character %}
+                {% include "rpg/partials/character_card.html" with character=active_character variant="featured" %}
+            {% else %}
                 <div class="empty-state">
-                    <strong>Nie masz jeszcze postaci.</strong>
-                    <p>Utwórz pierwszą kartę i od razu przypisz ją do systemu albo kampanii.</p>
+                    <strong>Wykonaj pierwszy krok.</strong>
+                    <p>Utwórz postać, a ten panel zamieni się w szybką kartę przy stole.</p>
                     <a class="button button-small" href="{% url 'character-create' %}">Utwórz pierwszą postać</a>
                 </div>
-            {% endfor %}
+            {% endif %}
         </div>
-    </div>
 
-    <div class="panel dice-panel">
-        <div class="panel-head">
-            <h2>Szybkie rzuty</h2>
-            <span>d4-d100</span>
-        </div>
-        <form method="post" action="{% url 'roll-create' %}" hx-post="{% url 'roll-create' %}" hx-target="#roll-workspace" hx-swap="innerHTML">
-            {% csrf_token %}
-            {{ roll_form.as_p }}
-            <div class="preset-dice" aria-label="Presety systemowe">
-                <button type="submit" name="preset" value="dnd-test">Test d20</button>
-                <button type="submit" name="preset" value="dnd-attack">Atak d20</button>
-                <button type="submit" name="preset" value="percentile-test">Test d100</button>
-                <button type="submit" name="preset" value="year-zero-pool">Pula d6</button>
-                <button type="submit" name="preset" value="vampire-pool">Wampir 5d10</button>
-                <button type="submit" name="preset" value="kult-test">Kult 2d10</button>
-            </div>
-            <div class="quick-dice" aria-label="Szybkie kości">
-                <button type="submit" name="expression" value="1d4">d4</button>
-                <button type="submit" name="expression" value="1d6">d6</button>
-                <button type="submit" name="expression" value="1d8">d8</button>
-                <button type="submit" name="expression" value="1d10">d10</button>
-                <button type="submit" name="expression" value="1d12">d12</button>
-                <button type="submit" name="expression" value="1d20">d20</button>
-                <button type="submit" name="expression" value="1d100">d100</button>
-            </div>
-            <button class="button" type="submit">Rzuć</button>
-        </form>
-        <div id="roll-workspace" class="roll-workspace">
-            {% include "rpg/partials/roll_workspace.html" with recent_rolls=recent_rolls %}
-        </div>
-    </div>
-
-    <div class="panel">
-        <div class="panel-head">
-            <h2>Kampanie</h2>
-            <span>{{ campaigns|length }}</span>
-        </div>
-        <div class="stack">
-            {% for campaign in campaigns %}
-                <article class="item item-link">
-                    <a href="{% url 'campaign-detail' campaign.pk %}">
-                        <strong>{{ campaign.name }}</strong>
-                        <p>{{ campaign.ruleset.name }} · postacie: {{ campaign.character_count }}</p>
-                    </a>
-                </article>
-            {% empty %}
-                <div class="empty-state">
-                    <strong>Nie masz jeszcze kampanii.</strong>
-                    {% if request.user.is_game_master %}
-                        <p>Kampania porządkuje postacie, rzuty i dziennik sesji.</p>
-                        <a class="button button-small button-ghost" href="{% url 'campaign-create' %}">Załóż kampanię</a>
-                    {% else %}
-                        <p>Tworzenie kampanii jest dostępne w roli Mistrza Gry.</p>
-                        <a class="button button-small button-ghost" href="{% url 'profile' %}">Ustaw rolę MG</a>
-                    {% endif %}
+        <aside class="dashboard-sidebar">
+            {% if request.user.is_game_master %}
+                <div class="panel panel-emphasis gm-panel dashboard-gm-panel">
+                    <div class="panel-head">
+                        <h2>Panel Mistrza Gry</h2>
+                        <span>Kampanie</span>
+                    </div>
+                    <p class="muted">Twórz kampanie, porządkuj postacie i przygotuj miejsce pod przyszłe sceny, NPC oraz notatki MG.</p>
+                    <a class="button button-small" href="{% url 'campaign-create' %}">Nowa kampania</a>
                 </div>
-            {% endfor %}
+            {% endif %}
+
+            <div class="panel panel-primary dashboard-roster-panel">
+                <div class="panel-head">
+                    <h2>Moje postacie</h2>
+                    <span>{{ characters|length }}</span>
+                </div>
+                <div class="character-card-grid character-card-grid-compact">
+                    {% for character in characters %}
+                        {% include "rpg/partials/character_card.html" with character=character variant="compact" %}
+                    {% empty %}
+                        <div class="empty-state">
+                            <strong>Nie masz jeszcze postaci.</strong>
+                            <p>Utwórz pierwszą kartę i od razu przypisz ją do systemu albo kampanii.</p>
+                            <a class="button button-small" href="{% url 'character-create' %}">Utwórz pierwszą postać</a>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <section class="panel panel-secondary dashboard-tabs-panel" data-dashboard-tabs>
+        <div class="panel-head dashboard-tabs-head">
+            <div>
+                <h2>Strefa użytkowa</h2>
+                <p class="muted dashboard-tabs-copy">Najważniejsze narzędzia są w jednym miejscu, bez długiego przewijania całego dashboardu.</p>
+            </div>
+            <span>Szybki dostęp</span>
+        </div>
+
+        <div class="dashboard-tabs" role="tablist" aria-label="Sekcje użytkowe dashboardu">
+            <button class="dashboard-tab is-active" id="dashboard-tab-rolls" type="button" role="tab" aria-selected="true" aria-controls="dashboard-panel-rolls" data-tab-target="dashboard-panel-rolls">Rzuty</button>
+            <button class="dashboard-tab" id="dashboard-tab-campaigns" type="button" role="tab" aria-selected="false" aria-controls="dashboard-panel-campaigns" data-tab-target="dashboard-panel-campaigns">Kampanie</button>
+            <button class="dashboard-tab" id="dashboard-tab-journal" type="button" role="tab" aria-selected="false" aria-controls="dashboard-panel-journal" data-tab-target="dashboard-panel-journal">Dziennik</button>
+        </div>
+
+        <div class="dashboard-tab-panels">
+            <section class="dashboard-tab-panel is-active" id="dashboard-panel-rolls" role="tabpanel" aria-labelledby="dashboard-tab-rolls">
+                <div class="dashboard-tool-panel panel panel-spotlight dice-panel dashboard-dice-panel">
+                    <div class="panel-head">
+                        <h2>Szybkie rzuty</h2>
+                        <span>d4-d100</span>
+                    </div>
+                    <form class="dice-form" method="post" action="{% url 'roll-create' %}" hx-post="{% url 'roll-create' %}" hx-target="#roll-workspace" hx-swap="innerHTML">
+                        {% csrf_token %}
+                        {{ roll_form.as_p }}
+                        <p class="panel-kicker">Presety systemowe</p>
+                        <div class="preset-dice" aria-label="Presety systemowe">
+                            <button type="submit" name="preset" value="dnd-test">Test d20</button>
+                            <button type="submit" name="preset" value="dnd-attack">Atak d20</button>
+                            <button type="submit" name="preset" value="percentile-test">Test d100</button>
+                            <button type="submit" name="preset" value="year-zero-pool">Pula d6</button>
+                            <button type="submit" name="preset" value="vampire-pool">Wampir 5d10</button>
+                            <button type="submit" name="preset" value="kult-test">Kult 2d10</button>
+                        </div>
+                        <p class="panel-kicker">Szybkie kości</p>
+                        <div class="quick-dice" aria-label="Szybkie kości">
+                            <button type="submit" name="expression" value="1d4">d4</button>
+                            <button type="submit" name="expression" value="1d6">d6</button>
+                            <button type="submit" name="expression" value="1d8">d8</button>
+                            <button type="submit" name="expression" value="1d10">d10</button>
+                            <button type="submit" name="expression" value="1d12">d12</button>
+                            <button type="submit" name="expression" value="1d20">d20</button>
+                            <button type="submit" name="expression" value="1d100">d100</button>
+                        </div>
+                        <button class="button dice-submit" type="submit">Rzuć</button>
+                    </form>
+                    <div id="roll-workspace" class="roll-workspace">
+                        {% include "rpg/partials/roll_workspace.html" with recent_rolls=recent_rolls %}
+                    </div>
+                </div>
+            </section>
+
+            <section class="dashboard-tab-panel" id="dashboard-panel-campaigns" role="tabpanel" aria-labelledby="dashboard-tab-campaigns" hidden>
+                <div class="dashboard-tool-panel panel panel-secondary dashboard-campaigns-panel">
+                    <div class="panel-head">
+                        <h2>Kampanie</h2>
+                        <span>{{ campaigns|length }}</span>
+                    </div>
+                    <div class="stack">
+                        {% for campaign in campaigns %}
+                            <article class="item item-link item-hover">
+                                <a href="{% url 'campaign-detail' campaign.pk %}">
+                                    <strong>{{ campaign.name }}</strong>
+                                    <p>{{ campaign.ruleset.name }} · postacie: {{ campaign.character_count }}</p>
+                                </a>
+                            </article>
+                        {% empty %}
+                            <div class="empty-state">
+                                <strong>Nie masz jeszcze kampanii.</strong>
+                                {% if request.user.is_game_master %}
+                                    <p>Kampania porządkuje postacie, rzuty i dziennik sesji.</p>
+                                    <a class="button button-small button-ghost" href="{% url 'campaign-create' %}">Załóż kampanię</a>
+                                {% else %}
+                                    <p>Tworzenie kampanii jest dostępne w roli Mistrza Gry.</p>
+                                    <a class="button button-small button-ghost" href="{% url 'profile' %}">Ustaw rolę MG</a>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </section>
+
+            <section class="dashboard-tab-panel" id="dashboard-panel-journal" role="tabpanel" aria-labelledby="dashboard-tab-journal" hidden>
+                <div class="dashboard-tool-panel panel panel-secondary dashboard-journal-panel">
+                    <div class="panel-head">
+                        <h2>Dziennik</h2>
+                        <span>Notatki i wydarzenia</span>
+                    </div>
+                    <form method="post" action="{% url 'journal-create' %}" hx-post="{% url 'journal-create' %}" hx-target="#journal-list" hx-swap="innerHTML" class="compact-form journal-form">
+                        {% csrf_token %}
+                        {{ journal_form.as_p }}
+                        <button class="button button-small journal-submit" type="submit">Dodaj wpis</button>
+                    </form>
+                    <div id="journal-list">
+                        {% include "rpg/partials/journal_list.html" with journal_entries=journal_entries %}
+                    </div>
+                </div>
+            </section>
+        </div>
+    </section>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'js/dashboard-tabs.js' %}" defer></script>
+{% endblock %}
+                                                <button type="submit" name="preset" value="vampire-pool">Wampir 5d10</button>
+                                                <button type="submit" name="preset" value="kult-test">Kult 2d10</button>
+                                            </div>
+                                            <p class="panel-kicker">Szybkie kosci</p>
+                                            <div class="quick-dice" aria-label="Szybkie kości">
+                                                <button type="submit" name="expression" value="1d4">d4</button>
+                                                <button type="submit" name="expression" value="1d6">d6</button>
+                                                <button type="submit" name="expression" value="1d8">d8</button>
+                                                <button type="submit" name="expression" value="1d10">d10</button>
+                                                <button type="submit" name="expression" value="1d12">d12</button>
+                                                <button type="submit" name="expression" value="1d20">d20</button>
+                                                <button type="submit" name="expression" value="1d100">d100</button>
+                                            </div>
+                                            <button class="button dice-submit" type="submit">Rzuć</button>
+                                        </form>
+                                        <div id="roll-workspace" class="roll-workspace">
+                                            {% include "rpg/partials/roll_workspace.html" with recent_rolls=recent_rolls %}
+                                        </div>
+                                    </div>
+                                </section>
+
+                                <section class="dashboard-tab-panel" id="dashboard-panel-campaigns" role="tabpanel" aria-labelledby="dashboard-tab-campaigns" hidden>
+                                    <div class="dashboard-tool-panel panel panel-secondary dashboard-campaigns-panel">
+                                        <div class="panel-head">
+                                            <h2>Kampanie</h2>
+                                            <span>{{ campaigns|length }}</span>
+                                        </div>
+                                        <div class="stack">
+                                            {% for campaign in campaigns %}
+                                                <article class="item item-link item-hover">
+                                                    <a href="{% url 'campaign-detail' campaign.pk %}">
+                                                        <strong>{{ campaign.name }}</strong>
+                                                        <p>{{ campaign.ruleset.name }} · postacie: {{ campaign.character_count }}</p>
+                                                    </a>
+                                                </article>
+                                            {% empty %}
+                                                <div class="empty-state">
+                                                    <strong>Nie masz jeszcze kampanii.</strong>
+                                                    {% if request.user.is_game_master %}
+                                                        <p>Kampania porządkuje postacie, rzuty i dziennik sesji.</p>
+                                                        <a class="button button-small button-ghost" href="{% url 'campaign-create' %}">Załóż kampanię</a>
+                                                    {% else %}
+                                                        <p>Tworzenie kampanii jest dostępne w roli Mistrza Gry.</p>
+                                                        <a class="button button-small button-ghost" href="{% url 'profile' %}">Ustaw rolę MG</a>
+                                                    {% endif %}
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </section>
+
+                                <section class="dashboard-tab-panel" id="dashboard-panel-journal" role="tabpanel" aria-labelledby="dashboard-tab-journal" hidden>
+                                    <div class="dashboard-tool-panel panel panel-secondary dashboard-journal-panel">
+                                        <div class="panel-head">
+                                            <h2>Dziennik</h2>
+                                            <span>Notatki i wydarzenia</span>
+                                        </div>
+                                        <form method="post" action="{% url 'journal-create' %}" hx-post="{% url 'journal-create' %}" hx-target="#journal-list" hx-swap="innerHTML" class="compact-form journal-form">
+                                            {% csrf_token %}
+                                            {{ journal_form.as_p }}
+                                            <button class="button button-small journal-submit" type="submit">Dodaj wpis</button>
+                                        </form>
+                                        <div id="journal-list">
+                                            {% include "rpg/partials/journal_list.html" with journal_entries=journal_entries %}
+                                        </div>
+                                    </div>
+                                </section>
+                            </div>
+                        </section>
+                    </section>
+                    {% endblock %}
+
+                    {% block extra_js %}
+                        <script src="{% static 'js/dashboard-tabs.js' %}" defer></script>
+                    <div class="empty-state">
+                        <strong>Nie masz jeszcze kampanii.</strong>
+                        {% if request.user.is_game_master %}
+                            <p>Kampania porządkuje postacie, rzuty i dziennik sesji.</p>
+                            <a class="button button-small button-ghost" href="{% url 'campaign-create' %}">Załóż kampanię</a>
+                        {% else %}
+                            <p>Tworzenie kampanii jest dostępne w roli Mistrza Gry.</p>
+                            <a class="button button-small button-ghost" href="{% url 'profile' %}">Ustaw rolę MG</a>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
         </div>
     </div>
 
-    <div class="panel journal-panel">
+    <div class="panel panel-secondary dashboard-journal-panel">
         <div class="panel-head">
             <h2>Dziennik</h2>
             <span>Notatki i wydarzenia</span>
         </div>
-        <form method="post" action="{% url 'journal-create' %}" hx-post="{% url 'journal-create' %}" hx-target="#journal-list" hx-swap="innerHTML" class="compact-form">
+        <form method="post" action="{% url 'journal-create' %}" hx-post="{% url 'journal-create' %}" hx-target="#journal-list" hx-swap="innerHTML" class="compact-form journal-form">
             {% csrf_token %}
             {{ journal_form.as_p }}
-            <button class="button button-small" type="submit">Dodaj wpis</button>
+            <button class="button button-small journal-submit" type="submit">Dodaj wpis</button>
         </form>
         <div id="journal-list">
             {% include "rpg/partials/journal_list.html" with journal_entries=journal_entries %}
