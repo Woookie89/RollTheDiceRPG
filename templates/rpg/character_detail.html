@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block title %}{{ character.name }} - Roll The Dice RPG{% endblock %}
+
+{% block content %}
+<section class="page-head split-head">
+    <div>
+        <p class="eyebrow">{{ character.ruleset.name }}</p>
+        <h1>{{ character.name }}</h1>
+        {% if character.campaign %}
+            <p class="lead">Kampania: <a href="{% url 'campaign-detail' character.campaign.pk %}">{{ character.campaign.name }}</a></p>
+        {% else %}
+            <p class="lead">Postać bez przypisanej kampanii.</p>
+        {% endif %}
+    </div>
+    <div class="actions">
+        <a class="button button-small" href="{% url 'character-edit' character.pk %}">Edytuj kartę</a>
+        <a class="button button-small button-ghost" href="{% url 'dashboard' %}">Wróć do stołu</a>
+    </div>
+</section>
+
+<section class="character-layout">
+    <article class="panel sheet-panel">
+        <div class="panel-head">
+            <h2>Karta postaci</h2>
+            <span>{{ character.ruleset.primary_die }}</span>
+        </div>
+        <div class="sheet-grid">
+            {% for field in character.sheet_fields %}
+                <div class="sheet-stat">
+                    <span>{{ field.label }}</span>
+                    <strong>{{ field.value }}</strong>
+                </div>
+            {% empty %}
+                <div class="empty-state">
+                    <strong>Karta czeka na szczegóły.</strong>
+                    <p>Dodaj profesję, zasoby i zdrowie, żeby szybciej prowadzić postać przy stole.</p>
+                </div>
+            {% endfor %}
+        </div>
+        {% if character.notes %}
+            <div class="notes-box">
+                <h3>Notatki</h3>
+                <p>{{ character.notes|linebreaksbr }}</p>
+            </div>
+        {% endif %}
+    </article>
+
+    <aside class="panel dice-panel">
+        <div class="panel-head">
+            <h2>Rzut postaci</h2>
+            <span>{{ character.ruleset.primary_die }}</span>
+        </div>
+        <form method="post" action="{% url 'roll-create' %}" hx-post="{% url 'roll-create' %}" hx-target="#roll-workspace" hx-swap="innerHTML">
+            {% csrf_token %}
+            {{ roll_form.as_p }}
+            <div class="quick-dice">
+                <button type="submit" name="expression" value="{{ character.data.default_expression|default:'1d20' }}">Preset</button>
+                <button type="submit" name="expression" value="1d20">d20</button>
+                <button type="submit" name="expression" value="1d100">d100</button>
+                <button type="submit" name="expression" value="6d6">6d6</button>
+            </div>
+            <button class="button" type="submit">Rzuć</button>
+        </form>
+        <div id="roll-workspace" class="roll-workspace">
+            {% include "rpg/partials/roll_workspace.html" with recent_rolls=recent_rolls %}
+        </div>
+    </aside>
+
+    <section class="panel journal-panel">
+        <div class="panel-head">
+            <h2>Dziennik postaci</h2>
+            <span>Ostatnie wpisy</span>
+        </div>
+        <form method="post" action="{% url 'journal-create' %}" hx-post="{% url 'journal-create' %}" hx-target="#journal-list" hx-swap="innerHTML" class="compact-form">
+            {% csrf_token %}
+            {{ journal_form.as_p }}
+            <button class="button button-small" type="submit">Dodaj wpis</button>
+        </form>
+        <div id="journal-list">
+            {% include "rpg/partials/journal_list.html" with journal_entries=journal_entries %}
+        </div>
+    </section>
+</section>
+{% endblock %}

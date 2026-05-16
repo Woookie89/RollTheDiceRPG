@@ -1,0 +1,20 @@
+<div class="stack roll-history">
+    {% for roll in recent_rolls %}
+        <article class="item">
+            <div>
+                <strong>{{ roll.label|default:roll.expression }}</strong>
+                <p>
+                    {{ roll.ruleset.name }}
+                    {% if roll.character %} · {{ roll.character.name }}{% endif %}
+                    {% if roll.context %} · {{ roll.context }}{% endif %}
+                </p>
+            </div>
+            <span class="score">{{ roll.total }}</span>
+        </article>
+    {% empty %}
+        <div class="empty-state">
+            <strong>Jeszcze nie było rzutów.</strong>
+            <p>Wybierz kość albo wpisz własny zapis, np. 2d6+3.</p>
+        </div>
+    {% endfor %}
+</div>

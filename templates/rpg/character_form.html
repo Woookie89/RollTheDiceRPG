@@ -1,15 +1,16 @@
 {% extends "base.html" %}
 
-{% block title %}Nowa postac - Roll The Dice RPG{% endblock %}
+{% block title %}{% if character %}Edycja postaci{% else %}Nowa postać{% endif %} - Roll The Dice RPG{% endblock %}
 
 {% block content %}
 <section class="page-head">
-    <p class="eyebrow">Postac</p>
-    <h1>Nowa postac</h1>
+    <p class="eyebrow">Postać</p>
+    <h1>{% if character %}Edycja postaci{% else %}Nowa postać{% endif %}</h1>
+    <p class="lead">Uzupełnij tylko to, co jest potrzebne przy stole. Szczegóły systemowe zapisujemy elastycznie w karcie postaci.</p>
 </section>
 <form class="panel form-panel" method="post">
     {% csrf_token %}
     {{ form.as_p }}
-    <button class="button" type="submit">Utworz postac</button>
+    <button class="button" type="submit">{% if character %}Zapisz zmiany{% else %}Utwórz postać{% endif %}</button>
 </form>
 {% endblock %}

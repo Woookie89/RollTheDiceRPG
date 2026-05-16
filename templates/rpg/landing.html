@@ -5,9 +5,9 @@
 {% block content %}
 <section class="hero">
     <div>
-        <p class="eyebrow">Wielosystemowy stol RPG</p>
+        <p class="eyebrow">Wielosystemowy stół RPG</p>
         <h1>Karty postaci, rzuty i przygody w jednym miejscu.</h1>
-        <p class="lead">Jeden rdzen aplikacji, rozne mechaniki: d20, percentile, pule kosci i testy narracyjne.</p>
+        <p class="lead">Jeden rdzeń aplikacji, różne mechaniki: d20, testy procentowe, pule kości i testy narracyjne.</p>
         <div class="actions">
             <a class="button" href="{% url 'register' %}">Zacznij</a>
             <a class="button button-ghost" href="{% url 'login' %}">Mam konto</a>
@@ -20,6 +20,30 @@
                 <strong>{{ ruleset.name }}</strong>
             </article>
         {% endfor %}
+    </div>
+</section>
+
+<section class="roadmap-section">
+    <div class="page-head">
+        <p class="eyebrow">Mapa rozwoju</p>
+        <h2>Najpierw wygodny stół gracza, potem narzędzia Mistrza Gry.</h2>
+    </div>
+    <div class="roadmap-grid">
+        <article class="roadmap-card">
+            <span>Teraz</span>
+            <strong>Gracz MVP</strong>
+            <p>Karty postaci, szybkie rzuty, kampanie i dziennik sesji.</p>
+        </article>
+        <article class="roadmap-card">
+            <span>Następnie</span>
+            <strong>Panel Mistrza Gry</strong>
+            <p>Planowanie sesji, prywatne notatki, sceny i porządkowanie kampanii.</p>
+        </article>
+        <article class="roadmap-card">
+            <span>Później</span>
+            <strong>NPC, frakcje i relacje</strong>
+            <p>Siatka powiązań, lokacje, tropy, handouty i wsparcie przygód.</p>
+        </article>
     </div>
 </section>
 {% endblock %}

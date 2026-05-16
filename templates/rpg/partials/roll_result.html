@@ -4,6 +4,10 @@
     <article class="roll-card">
         <p>{{ roll.label|default:roll.expression }}</p>
         <strong>{{ roll.total }}</strong>
-        <span>{{ roll.result.rolls|join:", " }}{% if roll.result.modifier %} / mod {{ roll.result.modifier }}{% endif %}</span>
+        <span>
+            Kości: {{ roll.result.rolls|join:", " }}
+            {% if roll.result.modifier %} / modyfikator {{ roll.result.modifier }}{% endif %}
+            {% if roll.context %} / {{ roll.context }}{% endif %}
+        </span>
     </article>
 {% endif %}

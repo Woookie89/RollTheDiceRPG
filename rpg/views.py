@@ -1,9 +1,9 @@
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
 
-from .forms import CampaignForm, CharacterForm, RollForm
-from .models import Campaign, Character, Roll, Ruleset
+from .forms import CampaignForm, CharacterForm, JournalEntryForm, RollForm
+from .models import Campaign, Character, JournalEntry, Roll, Ruleset
 from .services.dice import DiceExpressionError, roll_expression
 
 
@@ -19,7 +19,9 @@ def dashboard(request):
     characters = Character.objects.filter(owner=request.user).select_related('ruleset', 'campaign')
     campaigns = Campaign.objects.filter(owner=request.user).select_related('ruleset')
     recent_rolls = Roll.objects.filter(user=request.user).select_related('ruleset', 'character')[:8]
-    form = RollForm(user=request.user)
+    journal_entries = JournalEntry.objects.filter(user=request.user).select_related('campaign', 'character')[:5]
+    roll_form = RollForm(user=request.user)
+    journal_form = JournalEntryForm(user=request.user)
     return render(
         request,
         'rpg/dashboard.html',
@@ -27,7 +29,9 @@ def dashboard(request):
             'characters': characters,
             'campaigns': campaigns,
             'recent_rolls': recent_rolls,
-            'roll_form': form,
+            'journal_entries': journal_entries,
+            'roll_form': roll_form,
+            'journal_form': journal_form,
         },
     )
 
@@ -45,6 +49,28 @@ def campaign_create(request):
 
 
 @login_required
+def campaign_detail(request, pk):
+    campaign = get_object_or_404(
+        Campaign.objects.select_related('ruleset'),
+        pk=pk,
+        owner=request.user,
+    )
+    characters = campaign.characters.filter(owner=request.user).select_related('ruleset')
+    rolls = campaign.rolls.filter(user=request.user).select_related('character')[:8]
+    journal_entries = campaign.journal_entries.filter(user=request.user).select_related('character')[:8]
+    return render(
+        request,
+        'rpg/campaign_detail.html',
+        {
+            'campaign': campaign,
+            'characters': characters,
+            'rolls': rolls,
+            'journal_entries': journal_entries,
+        },
+    )
+
+
+@login_required
 def character_create(request):
     form = CharacterForm(request.POST or None, user=request.user)
     if request.method == 'POST' and form.is_valid():
@@ -53,8 +79,45 @@ def character_create(request):
         if character.campaign_id:
             character.ruleset = character.campaign.ruleset
         character.save()
-        return redirect('dashboard')
+        return redirect('character-detail', pk=character.pk)
     return render(request, 'rpg/character_form.html', {'form': form})
+
+
+@login_required
+def character_detail(request, pk):
+    character = get_object_or_404(
+        Character.objects.select_related('ruleset', 'campaign'),
+        pk=pk,
+        owner=request.user,
+    )
+    recent_rolls = character.rolls.filter(user=request.user).select_related('ruleset')[:8]
+    journal_entries = character.journal_entries.filter(user=request.user).select_related('campaign')[:5]
+    roll_form = RollForm(user=request.user, initial={'character': character, 'ruleset': character.ruleset})
+    journal_form = JournalEntryForm(
+        user=request.user,
+        initial={'character': character, 'campaign': character.campaign},
+    )
+    return render(
+        request,
+        'rpg/character_detail.html',
+        {
+            'character': character,
+            'recent_rolls': recent_rolls,
+            'journal_entries': journal_entries,
+            'roll_form': roll_form,
+            'journal_form': journal_form,
+        },
+    )
+
+
+@login_required
+def character_edit(request, pk):
+    character = get_object_or_404(Character, pk=pk, owner=request.user)
+    form = CharacterForm(request.POST or None, user=request.user, instance=character)
+    if request.method == 'POST' and form.is_valid():
+        form.save()
+        return redirect('character-detail', pk=character.pk)
+    return render(request, 'rpg/character_form.html', {'form': form, 'character': character})
 
 
 @login_required
@@ -74,6 +137,7 @@ def roll_create(request):
                 character=character,
                 campaign=character.campaign if character else None,
                 label=form.cleaned_data.get('label', ''),
+                context=form.cleaned_data.get('context', ''),
                 expression=result['expression'],
                 total=result['total'],
                 result=result,
@@ -81,8 +145,31 @@ def roll_create(request):
         except DiceExpressionError as exc:
             error = str(exc)
     else:
-        error = 'Sprawdz zapis rzutu i sproboj ponownie.'
+        error = 'Sprawdź zapis rzutu i spróbuj ponownie.'
 
     if request.headers.get('HX-Request'):
-        return render(request, 'rpg/partials/roll_result.html', {'roll': roll, 'error': error})
+        recent_rolls = Roll.objects.filter(user=request.user).select_related('ruleset', 'character')[:8]
+        return render(
+            request,
+            'rpg/partials/roll_workspace.html',
+            {'roll': roll, 'error': error, 'recent_rolls': recent_rolls},
+        )
+    return redirect('dashboard')
+
+
+@login_required
+@require_POST
+def journal_create(request):
+    form = JournalEntryForm(request.POST, user=request.user)
+    if form.is_valid():
+        entry = form.save(commit=False)
+        entry.user = request.user
+        entry.save()
+    if request.headers.get('HX-Request'):
+        journal_entries = JournalEntry.objects.filter(user=request.user).select_related('campaign', 'character')[:5]
+        return render(
+            request,
+            'rpg/partials/journal_list.html',
+            {'journal_entries': journal_entries},
+        )
     return redirect('dashboard')

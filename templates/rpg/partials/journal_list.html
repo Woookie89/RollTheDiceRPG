@@ -1,0 +1,20 @@
+<div class="stack journal-list">
+    {% for entry in journal_entries %}
+        <article class="item journal-item">
+            <div>
+                <strong>{{ entry.title }}</strong>
+                <p>
+                    {{ entry.get_entry_type_display }}
+                    {% if entry.campaign %} · {{ entry.campaign.name }}{% endif %}
+                    {% if entry.character %} · {{ entry.character.name }}{% endif %}
+                </p>
+                <p>{{ entry.body|truncatechars:140 }}</p>
+            </div>
+        </article>
+    {% empty %}
+        <div class="empty-state">
+            <strong>Dziennik jest pusty.</strong>
+            <p>Dodaj pierwszy trop, podsumowanie sesji albo notatkę o postaci.</p>
+        </div>
+    {% endfor %}
+</div>

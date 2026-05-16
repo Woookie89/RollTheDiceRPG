@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}{{ campaign.name }} - Roll The Dice RPG{% endblock %}
+
+{% block content %}
+<section class="page-head split-head">
+    <div>
+        <p class="eyebrow">{{ campaign.ruleset.name }}</p>
+        <h1>{{ campaign.name }}</h1>
+        {% if campaign.description %}
+            <p class="lead">{{ campaign.description }}</p>
+        {% else %}
+            <p class="lead">Kampania gotowa na postacie, rzuty i dziennik.</p>
+        {% endif %}
+    </div>
+    <div class="actions">
+        <a class="button button-small" href="{% url 'character-create' %}">Dodaj postać</a>
+        <a class="button button-small button-ghost" href="{% url 'dashboard' %}">Wróć do stołu</a>
+    </div>
+</section>
+
+<section class="dashboard-grid">
+    <div class="panel">
+        <div class="panel-head">
+            <h2>Postacie</h2>
+            <span>{{ characters|length }}</span>
+        </div>
+        <div class="stack">
+            {% for character in characters %}
+                <article class="item item-link">
+                    <a href="{% url 'character-detail' character.pk %}">
+                        <strong>{{ character.name }}</strong>
+                        <p>{{ character.ruleset.name }}</p>
+                    </a>
+                </article>
+            {% empty %}
+                <p class="muted">W tej kampanii nie ma jeszcze Twoich postaci.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="panel">
+        <div class="panel-head">
+            <h2>Ostatnie rzuty</h2>
+            <span>Historia</span>
+        </div>
+        {% include "rpg/partials/roll_history.html" with recent_rolls=rolls %}
+    </div>
+
+    <div class="panel journal-panel">
+        <div class="panel-head">
+            <h2>Dziennik kampanii</h2>
+            <span>Wpisy</span>
+        </div>
+        {% include "rpg/partials/journal_list.html" with journal_entries=journal_entries %}
+    </div>
+</section>
+{% endblock %}
