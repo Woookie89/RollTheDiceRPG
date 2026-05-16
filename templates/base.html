@@ -15,6 +15,7 @@
             {% if request.user.is_authenticated %}
                 <a href="{% url 'dashboard' %}">Stół</a>
                 <a href="{% url 'profile' %}">Profil</a>
+                <span class="nav-role">{{ request.user.get_profile_role_display }}</span>
                 <form method="post" action="{% url 'logout' %}">
                     {% csrf_token %}
                     <button class="nav-button" type="submit">Wyloguj się</button>

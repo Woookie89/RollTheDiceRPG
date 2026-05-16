@@ -1,27 +1,58 @@
 {% extends "base.html" %}
 
-{% block title %}Profil - Roll The Dice RPG{% endblock %}
+{% block title %}Panel użytkownika - Roll The Dice RPG{% endblock %}
 
 {% block content %}
-<section class="page-head">
-    <p class="eyebrow">Profil</p>
-    <h1>{{ profile_user.username }}</h1>
+<section class="page-head split-head">
+    <div>
+        <p class="eyebrow">Panel użytkownika</p>
+        <h1>{{ profile_user.username }}</h1>
+        <p class="lead">Ustaw rolę przy stole. Rola wpływa na skróty i akcje dostępne w aplikacji.</p>
+    </div>
+    <div class="role-badge">{{ profile_user.get_profile_role_display }}</div>
 </section>
 
-<section class="panel compact-panel">
-    <dl class="detail-list">
-        <div>
-            <dt>Email</dt>
-            <dd>{{ profile_user.email|default:"-" }}</dd>
+{% if messages %}
+    <section class="message-stack">
+        {% for message in messages %}
+            <div class="alert">{{ message }}</div>
+        {% endfor %}
+    </section>
+{% endif %}
+
+<section class="profile-grid">
+    <form class="panel form-panel" method="post" enctype="multipart/form-data">
+        <div class="panel-head">
+            <h2>Ustawienia profilu</h2>
+            <span>Rola i dane</span>
         </div>
-        <div>
-            <dt>Imię</dt>
-            <dd>{{ profile_user.first_name|default:"-" }}</dd>
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button class="button" type="submit">Zapisz profil</button>
+    </form>
+
+    <aside class="panel">
+        <div class="panel-head">
+            <h2>Twoje możliwości</h2>
+            <span>{{ profile_user.get_profile_role_display }}</span>
         </div>
-        <div>
-            <dt>Nazwisko</dt>
-            <dd>{{ profile_user.last_name|default:"-" }}</dd>
-        </div>
-    </dl>
+        {% if profile_user.is_game_master %}
+            <div class="stack">
+                <article class="capability-card">
+                    <strong>Kampanie i przygotowanie sesji</strong>
+                    <p>Możesz tworzyć oraz edytować kampanie. Kolejne iteracje dodadzą sceny, NPC i prywatne notatki MG.</p>
+                </article>
+                <a class="button button-small" href="{% url 'campaign-create' %}">Utwórz kampanię</a>
+            </div>
+        {% else %}
+            <div class="stack">
+                <article class="capability-card">
+                    <strong>Postacie i gra przy stole</strong>
+                    <p>Skupiasz się na kartach postaci, rzutach i dzienniku. Zmień rolę na Mistrza Gry, jeśli chcesz prowadzić kampanie.</p>
+                </article>
+                <a class="button button-small" href="{% url 'character-create' %}">Utwórz postać</a>
+            </div>
+        {% endif %}
+    </aside>
 </section>
 {% endblock %}

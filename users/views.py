@@ -1,5 +1,6 @@
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 from django.shortcuts import redirect, render
 from django.views.generic import CreateView
 from rest_framework import viewsets
@@ -8,7 +9,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 
-from .forms import CustomUserCreationForm
+from .forms import CustomUserCreationForm, CustomUserProfileForm
 from .models import CustomUser
 from .serializers import CustomUserSerializer, LoginSerializer
 
@@ -28,7 +29,12 @@ class RegisterView(CreateView):
 
 @login_required
 def profile_view(request):
-    return render(request, 'users/profile.html', {'profile_user': request.user})
+    form = CustomUserProfileForm(request.POST or None, request.FILES or None, instance=request.user)
+    if request.method == 'POST' and form.is_valid():
+        form.save()
+        messages.success(request, 'Profil został zapisany.')
+        return redirect('profile')
+    return render(request, 'users/profile.html', {'profile_user': request.user, 'form': form})
 
 
 class CustomUserViewSet(viewsets.ModelViewSet):
