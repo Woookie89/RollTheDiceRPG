@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.db import models
+from django.utils.functional import cached_property
 from django.utils.text import slugify
 
 
@@ -97,6 +98,19 @@ class Character(models.Model):
         from .services.character_presets import iter_character_fields
 
         return iter_character_fields(self.data)
+
+    @cached_property
+    def initials(self):
+        parts = [part for part in self.name.split() if part]
+        if not parts:
+            return 'RT'
+        if len(parts) == 1:
+            return parts[0][:2].upper()
+        return ''.join(part[0] for part in parts[:2]).upper()
+
+    @cached_property
+    def summary_fields(self):
+        return self.sheet_fields[:3]
 
 
 class Roll(models.Model):
