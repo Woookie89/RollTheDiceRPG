@@ -8,9 +8,32 @@
     <h1>{% if character %}Edycja postaci{% else %}Nowa postać{% endif %}</h1>
     <p class="lead">Uzupełnij tylko to, co jest potrzebne przy stole. Szczegóły systemowe zapisujemy elastycznie w karcie postaci.</p>
 </section>
-<form class="panel form-panel" method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button class="button" type="submit">{% if character %}Zapisz zmiany{% else %}Utwórz postać{% endif %}</button>
-</form>
+<section class="editor-layout">
+    <form class="panel form-panel editor-form-panel" method="post">
+        <div class="panel-head">
+            <h2>Dane postaci</h2>
+            <span>Edycja przy stole</span>
+        </div>
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button class="button" type="submit">{% if character %}Zapisz zmiany{% else %}Utwórz postać{% endif %}</button>
+    </form>
+
+    <aside class="panel editor-side-panel">
+        <div class="panel-head">
+            <h2>Jak wypelniac karte</h2>
+            <span>Praktycznie</span>
+        </div>
+        <div class="stack">
+            <article class="capability-card">
+                <strong>Najpierw fundament</strong>
+                <p>Imie, system i kampania powinny wystarczyc, zeby ruszyc dalej bez przeladowania formularza.</p>
+            </article>
+            <article class="capability-card">
+                <strong>Potem detale sesyjne</strong>
+                <p>Pola o zasobach, zdrowiu i notatkach maja pomagac przy grze, a nie robic papierologii.</p>
+            </article>
+        </div>
+    </aside>
+</section>
 {% endblock %}

@@ -6,10 +6,30 @@
 <section class="page-head">
     <p class="eyebrow">Kampania</p>
     <h1>{% if campaign %}Edycja kampanii{% else %}Nowa kampania{% endif %}</h1>
+    <p class="lead">Kampania ma spinac postacie, historie rzutow i dziennik w jednym, czytelnym miejscu.</p>
 </section>
-<form class="panel form-panel" method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button class="button" type="submit">{% if campaign %}Zapisz kampanię{% else %}Utwórz kampanię{% endif %}</button>
-</form>
+<section class="editor-layout editor-layout-compact">
+    <form class="panel form-panel editor-form-panel" method="post">
+        <div class="panel-head">
+            <h2>Dane kampanii</h2>
+            <span>Zakres i system</span>
+        </div>
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button class="button" type="submit">{% if campaign %}Zapisz kampanię{% else %}Utwórz kampanię{% endif %}</button>
+    </form>
+
+    <aside class="panel editor-side-panel">
+        <div class="panel-head">
+            <h2>Dobry punkt startu</h2>
+            <span>Minimum</span>
+        </div>
+        <div class="stack">
+            <article class="capability-card">
+                <strong>Prosta nazwa i opis</strong>
+                <p>Nie musisz opisywac wszystkiego od razu. Wazne, zeby kampania byla rozpoznawalna i gotowa do przypisania postaci.</p>
+            </article>
+        </div>
+    </aside>
+</section>
 {% endblock %}
