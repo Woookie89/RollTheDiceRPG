@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Campaign, CampaignMember, Character, Roll, Ruleset
+from .models import Campaign, CampaignMember, Character, JournalEntry, Roll, Ruleset
 
 
 @admin.register(Ruleset)
@@ -32,6 +32,13 @@ class CharacterAdmin(admin.ModelAdmin):
 
 @admin.register(Roll)
 class RollAdmin(admin.ModelAdmin):
-    list_display = ('created_at', 'user', 'ruleset', 'label', 'expression', 'total')
+    list_display = ('created_at', 'user', 'ruleset', 'label', 'context', 'expression', 'total')
     list_filter = ('ruleset',)
     search_fields = ('label', 'expression', 'user__username')
+
+
+@admin.register(JournalEntry)
+class JournalEntryAdmin(admin.ModelAdmin):
+    list_display = ('created_at', 'title', 'entry_type', 'user', 'campaign', 'character')
+    list_filter = ('entry_type', 'campaign')
+    search_fields = ('title', 'body', 'user__username')

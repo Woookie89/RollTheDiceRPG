@@ -52,8 +52,8 @@ class CampaignMember(models.Model):
     GAME_MASTER = 'game_master'
 
     ROLE_CHOICES = [
-        (PLAYER, 'Player'),
-        (GAME_MASTER, 'Game master'),
+        (PLAYER, 'Gracz'),
+        (GAME_MASTER, 'Mistrz Gry'),
     ]
 
     campaign = models.ForeignKey(Campaign, related_name='members', on_delete=models.CASCADE)
@@ -92,6 +92,12 @@ class Character(models.Model):
     def __str__(self):
         return self.name
 
+    @property
+    def sheet_fields(self):
+        from .services.character_presets import iter_character_fields
+
+        return iter_character_fields(self.data)
+
 
 class Roll(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='rolls', on_delete=models.CASCADE)
@@ -99,6 +105,7 @@ class Roll(models.Model):
     campaign = models.ForeignKey(Campaign, related_name='rolls', null=True, blank=True, on_delete=models.SET_NULL)
     character = models.ForeignKey(Character, related_name='rolls', null=True, blank=True, on_delete=models.SET_NULL)
     label = models.CharField(max_length=120, blank=True)
+    context = models.CharField(max_length=160, blank=True)
     expression = models.CharField(max_length=80)
     total = models.IntegerField(null=True, blank=True)
     result = models.JSONField(default=dict)
@@ -109,3 +116,45 @@ class Roll(models.Model):
 
     def __str__(self):
         return self.label or self.expression
+
+
+class JournalEntry(models.Model):
+    NOTE = 'note'
+    SESSION = 'session'
+    EVENT = 'event'
+    REWARD = 'reward'
+
+    TYPE_CHOICES = [
+        (NOTE, 'Notatka'),
+        (SESSION, 'Sesja'),
+        (EVENT, 'Wydarzenie'),
+        (REWARD, 'Nagroda'),
+    ]
+
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='journal_entries', on_delete=models.CASCADE)
+    campaign = models.ForeignKey(
+        Campaign,
+        related_name='journal_entries',
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
+    )
+    character = models.ForeignKey(
+        Character,
+        related_name='journal_entries',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+    )
+    entry_type = models.CharField(max_length=24, choices=TYPE_CHOICES, default=NOTE)
+    title = models.CharField(max_length=140)
+    body = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name = 'wpis dziennika'
+        verbose_name_plural = 'wpisy dziennika'
+
+    def __str__(self):
+        return self.title

@@ -21,7 +21,7 @@ RULESETS = [
     },
     {
         'slug': 'year-zero',
-        'name': 'Year Zero / Tajemnice Petli i Powodzi',
+        'name': 'Year Zero / Tajemnice Pętli i Powodzi',
         'family': 'dice-pool-d6',
         'primary_die': 'd6 pool',
         'theme': 'retro-science',
