@@ -21,7 +21,7 @@
 {% endif %}
 
 <section class="profile-grid">
-    <form class="panel form-panel" method="post" enctype="multipart/form-data">
+    <form class="panel form-panel profile-form-panel" method="post" enctype="multipart/form-data">
         <div class="panel-head">
             <h2>Ustawienia profilu</h2>
             <span>Rola i dane</span>
@@ -31,7 +31,7 @@
         <button class="button" type="submit">Zapisz profil</button>
     </form>
 
-    <aside class="panel">
+    <aside class="panel profile-side-panel">
         <div class="panel-head">
             <h2>Twoje możliwości</h2>
             <span>{{ profile_user.get_profile_role_display }}</span>

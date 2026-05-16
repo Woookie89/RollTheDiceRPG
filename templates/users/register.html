@@ -7,8 +7,9 @@
     <div class="auth-copy">
         <p class="eyebrow">Nowy gracz</p>
         <h1>Załóż konto i przygotuj pierwszą kartę.</h1>
+        <p class="lead">Najpierw konto, potem karta, kampania i szybkie wejscie do stolu.</p>
     </div>
-    <form class="panel form-panel" method="post" enctype="multipart/form-data">
+    <form class="panel form-panel auth-form-panel" method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {{ form.as_p }}
         <button class="button" type="submit">Utwórz konto</button>

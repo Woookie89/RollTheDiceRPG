@@ -7,8 +7,9 @@
     <div class="auth-copy">
         <p class="eyebrow">Powrót do stołu</p>
         <h1>Wybierz postać, rzuć kością i ruszaj dalej.</h1>
+        <p class="lead">Logowanie ma byc szybkie i czytelne, bez wpychania formularza w przypadkowy fragment ekranu.</p>
     </div>
-    <form class="panel form-panel" method="post">
+    <form class="panel form-panel auth-form-panel" method="post">
         {% csrf_token %}
         {{ form.as_p }}
         <button class="button" type="submit">Zaloguj się</button>
