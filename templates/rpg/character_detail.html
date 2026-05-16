@@ -19,8 +19,12 @@
     </div>
 </section>
 
+<section class="character-hero-panel panel panel-feature">
+    {% include "rpg/partials/character_card.html" with character=character variant="hero" %}
+</section>
+
 <section class="character-layout">
-    <article class="panel sheet-panel">
+    <article class="panel panel-feature sheet-panel">
         <div class="panel-head">
             <h2>Karta postaci</h2>
             <span>{{ character.ruleset.primary_die }}</span>
@@ -46,7 +50,7 @@
         {% endif %}
     </article>
 
-    <aside class="panel dice-panel">
+    <aside class="panel panel-spotlight dice-panel">
         <div class="panel-head">
             <h2>Rzut postaci</h2>
             <span>{{ character.ruleset.primary_die }}</span>
@@ -54,6 +58,7 @@
         <form method="post" action="{% url 'roll-create' %}" hx-post="{% url 'roll-create' %}" hx-target="#roll-workspace" hx-swap="innerHTML">
             {% csrf_token %}
             {{ roll_form.as_p }}
+            <p class="panel-kicker">Presety systemowe</p>
             <div class="preset-dice">
                 <button type="submit" name="preset" value="dnd-test">Test d20</button>
                 <button type="submit" name="preset" value="dnd-attack">Atak d20</button>
@@ -62,6 +67,7 @@
                 <button type="submit" name="preset" value="vampire-pool">Wampir 5d10</button>
                 <button type="submit" name="preset" value="kult-test">Kult 2d10</button>
             </div>
+            <p class="panel-kicker">Szybkie kosci</p>
             <div class="quick-dice">
                 <button type="submit" name="expression" value="{{ character.data.default_expression|default:'1d20' }}">Preset</button>
                 <button type="submit" name="expression" value="1d20">d20</button>
@@ -75,7 +81,7 @@
         </div>
     </aside>
 
-    <section class="panel journal-panel">
+    <section class="panel panel-secondary journal-panel">
         <div class="panel-head">
             <h2>Dziennik postaci</h2>
             <span>Ostatnie wpisy</span>
