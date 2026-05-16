@@ -1,7 +1,7 @@
 <div class="stack journal-list">
     {% for entry in journal_entries %}
         <article class="item journal-item">
-            <div>
+            <div class="item-copy">
                 <strong>{{ entry.title }}</strong>
                 <p>
                     {{ entry.get_entry_type_display }}

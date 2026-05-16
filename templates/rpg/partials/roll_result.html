@@ -2,9 +2,9 @@
     <div class="alert">{{ error }}</div>
 {% elif roll %}
     <article class="roll-card">
-        <p>{{ roll.label|default:roll.expression }}</p>
+        <p class="roll-card-label">{{ roll.label|default:roll.expression }}</p>
         <strong>{{ roll.total }}</strong>
-        <span>
+        <span class="roll-card-meta">
             Kości: {{ roll.result.rolls|join:", " }}
             {% if roll.result.modifier %} / modyfikator {{ roll.result.modifier }}{% endif %}
             {% if roll.context %} / {{ roll.context }}{% endif %}

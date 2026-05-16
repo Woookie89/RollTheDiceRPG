@@ -1,7 +1,7 @@
 <div class="stack roll-history">
     {% for roll in recent_rolls %}
-        <article class="item">
-            <div>
+        <article class="item item-stat">
+            <div class="item-copy">
                 <strong>{{ roll.label|default:roll.expression }}</strong>
                 <p>
                     {{ roll.ruleset.name }}
