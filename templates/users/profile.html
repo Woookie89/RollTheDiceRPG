@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}Profil - Roll The Dice RPG{% endblock %}
+
+{% block content %}
+<section class="page-head">
+    <p class="eyebrow">Profil</p>
+    <h1>{{ profile_user.username }}</h1>
+</section>
+
+<section class="panel compact-panel">
+    <dl class="detail-list">
+        <div>
+            <dt>Email</dt>
+            <dd>{{ profile_user.email|default:"-" }}</dd>
+        </div>
+        <div>
+            <dt>Imie</dt>
+            <dd>{{ profile_user.first_name|default:"-" }}</dd>
+        </div>
+        <div>
+            <dt>Nazwisko</dt>
+            <dd>{{ profile_user.last_name|default:"-" }}</dd>
+        </div>
+    </dl>
+</section>
+{% endblock %}

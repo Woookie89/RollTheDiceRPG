@@ -25,6 +25,8 @@ class CustomUserSerializer(serializers.ModelSerializer):
         if password:
             instance.set_password(password)
         instance.username = validated_data.get('username', instance.username)
+        instance.email = validated_data.get('email', instance.email)
+        instance.avatar = validated_data.get('avatar', instance.avatar)
         instance.save()
         return instance
 

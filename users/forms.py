@@ -1,22 +1,15 @@
-# from django import forms
-# from django.contrib.auth.forms import UserCreationForm, UserChangeForm
-# from .models import CustomUser
+from django.contrib.auth.forms import UserChangeForm, UserCreationForm
 
-# class CustomUserCreationForm(UserCreationForm):
-#     password2 = forms.CharField(label='Confirm password', widget=forms.PasswordInput)
+from .models import CustomUser
 
-#     class Meta:
-#         model = CustomUser
-#         fields = ('username', 'email', 'password1', 'password2', 'avatar',)
 
-#     def save(self, commit=True):
-#         user = super().save(commit=False)
-#         user.set_password(self.cleaned_data["password1"])
-#         if commit:
-#             user.save()
-#         return user
+class CustomUserCreationForm(UserCreationForm):
+    class Meta(UserCreationForm.Meta):
+        model = CustomUser
+        fields = ('username', 'email', 'avatar')
 
-# class CustomUserChangeForm(UserChangeForm):
-#     class Meta:
-#         model = CustomUser
-#         fields = ('username', 'email', 'avatar', 'password',)
+
+class CustomUserChangeForm(UserChangeForm):
+    class Meta:
+        model = CustomUser
+        fields = ('username', 'email', 'avatar', 'first_name', 'last_name', 'password')

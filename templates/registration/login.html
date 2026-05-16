@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Logowanie - Roll The Dice RPG{% endblock %}
+
+{% block content %}
+<section class="auth-layout">
+    <div class="auth-copy">
+        <p class="eyebrow">Powrot do stolu</p>
+        <h1>Wybierz postac, rzut i ruszaj dalej.</h1>
+    </div>
+    <form class="panel form-panel" method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button class="button" type="submit">Zaloguj</button>
+    </form>
+</section>
+{% endblock %}
