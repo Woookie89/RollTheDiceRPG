@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block title %}Stol - Roll The Dice RPG{% endblock %}
+
+{% block content %}
+<section class="page-head split-head">
+    <div>
+        <p class="eyebrow">Stol gracza</p>
+        <h1>Twoj pulpit RPG</h1>
+    </div>
+    <div class="actions">
+        <a class="button button-small" href="{% url 'character-create' %}">Nowa postac</a>
+        <a class="button button-small button-ghost" href="{% url 'campaign-create' %}">Nowa kampania</a>
+    </div>
+</section>
+
+<section class="dashboard-grid">
+    <div class="panel">
+        <div class="panel-head">
+            <h2>Postacie</h2>
+            <span>{{ characters|length }}</span>
+        </div>
+        <div class="stack">
+            {% for character in characters %}
+                <article class="item">
+                    <div>
+                        <strong>{{ character.name }}</strong>
+                        <p>{{ character.ruleset.name }}</p>
+                    </div>
+                    {% if character.campaign %}
+                        <span class="pill">{{ character.campaign.name }}</span>
+                    {% endif %}
+                </article>
+            {% empty %}
+                <p class="muted">Brak postaci.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="panel dice-panel">
+        <div class="panel-head">
+            <h2>Kosci</h2>
+            <span>d4-d100</span>
+        </div>
+        <form method="post" action="{% url 'roll-create' %}" hx-post="{% url 'roll-create' %}" hx-target="#roll-result" hx-swap="innerHTML">
+            {% csrf_token %}
+            {{ roll_form.as_p }}
+            <button class="button" type="submit">Rzuc</button>
+        </form>
+        <div id="roll-result" class="roll-result"></div>
+    </div>
+
+    <div class="panel">
+        <div class="panel-head">
+            <h2>Kampanie</h2>
+            <span>{{ campaigns|length }}</span>
+        </div>
+        <div class="stack">
+            {% for campaign in campaigns %}
+                <article class="item">
+                    <div>
+                        <strong>{{ campaign.name }}</strong>
+                        <p>{{ campaign.ruleset.name }}</p>
+                    </div>
+                </article>
+            {% empty %}
+                <p class="muted">Brak kampanii.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="panel journal-panel">
+        <div class="panel-head">
+            <h2>Ostatnie rzuty</h2>
+            <span>Historia</span>
+        </div>
+        <div class="stack">
+            {% for roll in recent_rolls %}
+                <article class="item">
+                    <div>
+                        <strong>{{ roll.label|default:roll.expression }}</strong>
+                        <p>{{ roll.ruleset.name }}{% if roll.character %} - {{ roll.character.name }}{% endif %}</p>
+                    </div>
+                    <span class="score">{{ roll.total }}</span>
+                </article>
+            {% empty %}
+                <p class="muted">Jeszcze nie bylo rzutow.</p>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

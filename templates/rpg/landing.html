@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Roll The Dice RPG{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div>
+        <p class="eyebrow">Wielosystemowy stol RPG</p>
+        <h1>Karty postaci, rzuty i przygody w jednym miejscu.</h1>
+        <p class="lead">Jeden rdzen aplikacji, rozne mechaniki: d20, percentile, pule kosci i testy narracyjne.</p>
+        <div class="actions">
+            <a class="button" href="{% url 'register' %}">Zacznij</a>
+            <a class="button button-ghost" href="{% url 'login' %}">Mam konto</a>
+        </div>
+    </div>
+    <div class="system-board">
+        {% for ruleset in rulesets %}
+            <article class="system-chip theme-{{ ruleset.theme }}">
+                <span>{{ ruleset.primary_die }}</span>
+                <strong>{{ ruleset.name }}</strong>
+            </article>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}
