@@ -60,6 +60,17 @@ a {
     color: var(--muted);
 }
 
+.nav-role,
+.role-badge {
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    color: var(--accent-strong);
+    font-size: 0.78rem;
+    font-weight: 800;
+    padding: 6px 10px;
+    text-transform: uppercase;
+}
+
 .nav form {
     margin: 0;
 }
@@ -229,6 +240,30 @@ a {
     padding: 18px;
 }
 
+.active-character-panel {
+    grid-column: span 2;
+}
+
+.gm-panel {
+    border-color: rgba(215, 168, 79, 0.45);
+}
+
+.featured-character {
+    display: grid;
+    gap: 16px;
+}
+
+.featured-character h2 {
+    margin: 0;
+    font-size: clamp(1.8rem, 4vw, 3.4rem);
+    line-height: 1;
+}
+
+.featured-character p {
+    margin: 0;
+    color: var(--muted);
+}
+
 .panel-primary {
     min-height: 320px;
 }
@@ -376,14 +411,20 @@ a {
     margin-top: 16px;
 }
 
-.quick-dice {
+.quick-dice,
+.preset-dice {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 8px;
     margin: 0 0 14px;
 }
 
-.quick-dice button {
+.preset-dice {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.quick-dice button,
+.preset-dice button {
     min-height: 38px;
     border: 1px solid var(--line);
     border-radius: 6px;
@@ -394,7 +435,12 @@ a {
     font-weight: 800;
 }
 
-.quick-dice button:hover {
+.preset-dice button {
+    background: rgba(215, 168, 79, 0.08);
+}
+
+.quick-dice button:hover,
+.preset-dice button:hover {
     border-color: var(--accent-strong);
 }
 
@@ -462,6 +508,10 @@ a {
     gap: 12px;
 }
 
+.compact-sheet {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
 .sheet-stat {
     border: 1px solid var(--line);
     border-radius: 6px;
@@ -506,6 +556,32 @@ a {
     margin-top: 8px;
 }
 
+.profile-grid {
+    display: grid;
+    grid-template-columns: minmax(320px, 0.9fr) minmax(280px, 1fr);
+    gap: 18px;
+    align-items: start;
+    padding-bottom: 48px;
+}
+
+.message-stack {
+    display: grid;
+    gap: 10px;
+    margin-bottom: 18px;
+}
+
+.capability-card {
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: #202329;
+    padding: 14px;
+}
+
+.capability-card p {
+    color: var(--muted);
+    line-height: 1.6;
+}
+
 .muted {
     color: var(--muted);
 }
@@ -515,12 +591,19 @@ a {
     .auth-layout,
     .dashboard-grid,
     .character-layout,
+    .profile-grid,
     .roadmap-grid {
         grid-template-columns: 1fr;
     }
 
+    .active-character-panel,
     .journal-panel {
         grid-column: auto;
+    }
+
+    .compact-sheet,
+    .preset-dice {
+        grid-template-columns: 1fr;
     }
 
     .split-head {

@@ -7,15 +7,63 @@
     <div>
         <p class="eyebrow">Stół gracza</p>
         <h1>Twój pulpit RPG</h1>
-        <p class="lead">Postacie, szybkie rzuty i notatki z sesji w jednym miejscu.</p>
+        <p class="lead">Postacie, szybkie rzuty i notatki z sesji w jednym miejscu. Tryb: {{ request.user.get_profile_role_display }}.</p>
     </div>
     <div class="actions">
         <a class="button button-small" href="{% url 'character-create' %}">Nowa postać</a>
-        <a class="button button-small button-ghost" href="{% url 'campaign-create' %}">Nowa kampania</a>
+        {% if request.user.is_game_master %}
+            <a class="button button-small button-ghost" href="{% url 'campaign-create' %}">Nowa kampania</a>
+        {% else %}
+            <a class="button button-small button-ghost" href="{% url 'profile' %}">Zmień rolę</a>
+        {% endif %}
     </div>
 </section>
 
 <section class="dashboard-grid">
+    <div class="panel active-character-panel">
+        <div class="panel-head">
+            <h2>Aktywna postać</h2>
+            <span>Ostatnio zmieniona</span>
+        </div>
+        {% if active_character %}
+            <article class="featured-character">
+                <p>{{ active_character.ruleset.name }}</p>
+                <h2>{{ active_character.name }}</h2>
+                <div class="sheet-grid compact-sheet">
+                    {% for field in active_character.sheet_fields %}
+                        <div class="sheet-stat">
+                            <span>{{ field.label }}</span>
+                            <strong>{{ field.value }}</strong>
+                        </div>
+                    {% empty %}
+                        <p class="muted">Uzupełnij kartę, żeby widzieć najważniejsze pola tutaj.</p>
+                    {% endfor %}
+                </div>
+                <div class="actions">
+                    <a class="button button-small" href="{% url 'character-detail' active_character.pk %}">Otwórz kartę</a>
+                    <a class="button button-small button-ghost" href="{% url 'character-edit' active_character.pk %}">Edytuj</a>
+                </div>
+            </article>
+        {% else %}
+            <div class="empty-state">
+                <strong>Wykonaj pierwszy krok.</strong>
+                <p>Utwórz postać, a ten panel zamieni się w szybką kartę przy stole.</p>
+                <a class="button button-small" href="{% url 'character-create' %}">Utwórz pierwszą postać</a>
+            </div>
+        {% endif %}
+    </div>
+
+    {% if request.user.is_game_master %}
+        <div class="panel gm-panel">
+            <div class="panel-head">
+                <h2>Panel Mistrza Gry</h2>
+                <span>Kampanie</span>
+            </div>
+            <p class="muted">Twórz kampanie, porządkuj postacie i przygotuj miejsce pod przyszłe sceny, NPC oraz notatki MG.</p>
+            <a class="button button-small" href="{% url 'campaign-create' %}">Nowa kampania</a>
+        </div>
+    {% endif %}
+
     <div class="panel panel-primary">
         <div class="panel-head">
             <h2>Moje postacie</h2>
@@ -50,6 +98,14 @@
         <form method="post" action="{% url 'roll-create' %}" hx-post="{% url 'roll-create' %}" hx-target="#roll-workspace" hx-swap="innerHTML">
             {% csrf_token %}
             {{ roll_form.as_p }}
+            <div class="preset-dice" aria-label="Presety systemowe">
+                <button type="submit" name="preset" value="dnd-test">Test d20</button>
+                <button type="submit" name="preset" value="dnd-attack">Atak d20</button>
+                <button type="submit" name="preset" value="percentile-test">Test d100</button>
+                <button type="submit" name="preset" value="year-zero-pool">Pula d6</button>
+                <button type="submit" name="preset" value="vampire-pool">Wampir 5d10</button>
+                <button type="submit" name="preset" value="kult-test">Kult 2d10</button>
+            </div>
             <div class="quick-dice" aria-label="Szybkie kości">
                 <button type="submit" name="expression" value="1d4">d4</button>
                 <button type="submit" name="expression" value="1d6">d6</button>
@@ -76,14 +132,19 @@
                 <article class="item item-link">
                     <a href="{% url 'campaign-detail' campaign.pk %}">
                         <strong>{{ campaign.name }}</strong>
-                        <p>{{ campaign.ruleset.name }}</p>
+                        <p>{{ campaign.ruleset.name }} · postacie: {{ campaign.character_count }}</p>
                     </a>
                 </article>
             {% empty %}
                 <div class="empty-state">
                     <strong>Nie masz jeszcze kampanii.</strong>
-                    <p>Kampania porządkuje postacie, rzuty i dziennik sesji.</p>
-                    <a class="button button-small button-ghost" href="{% url 'campaign-create' %}">Załóż kampanię</a>
+                    {% if request.user.is_game_master %}
+                        <p>Kampania porządkuje postacie, rzuty i dziennik sesji.</p>
+                        <a class="button button-small button-ghost" href="{% url 'campaign-create' %}">Załóż kampanię</a>
+                    {% else %}
+                        <p>Tworzenie kampanii jest dostępne w roli Mistrza Gry.</p>
+                        <a class="button button-small button-ghost" href="{% url 'profile' %}">Ustaw rolę MG</a>
+                    {% endif %}
                 </div>
             {% endfor %}
         </div>

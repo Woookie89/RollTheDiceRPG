@@ -23,14 +23,47 @@ class CampaignSerializer(serializers.ModelSerializer):
 
 class CharacterSerializer(serializers.ModelSerializer):
     view_url = serializers.SerializerMethodField()
+    ruleset_detail = serializers.SerializerMethodField()
+    recent_rolls = serializers.SerializerMethodField()
 
     class Meta:
         model = Character
-        fields = ('id', 'name', 'campaign', 'ruleset', 'view_url', 'portrait', 'data', 'notes', 'is_active', 'created_at', 'updated_at')
+        fields = (
+            'id',
+            'name',
+            'campaign',
+            'ruleset',
+            'ruleset_detail',
+            'view_url',
+            'portrait',
+            'data',
+            'notes',
+            'is_active',
+            'recent_rolls',
+            'created_at',
+            'updated_at',
+        )
         read_only_fields = ('id', 'created_at', 'updated_at')
 
     def get_view_url(self, obj):
         return f'/characters/{obj.pk}/'
+
+    def get_ruleset_detail(self, obj):
+        return RulesetSerializer(obj.ruleset).data
+
+    def get_recent_rolls(self, obj):
+        return [
+            {
+                'id': roll.pk,
+                'label': roll.label,
+                'context': roll.context,
+                'expression': roll.expression,
+                'total': roll.total,
+                'result': roll.result,
+                'created_at': roll.created_at,
+            }
+            for roll in obj.rolls.all()[:5]
+        ]
 
 
 class RollSerializer(serializers.ModelSerializer):

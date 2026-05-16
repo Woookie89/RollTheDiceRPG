@@ -1,10 +1,22 @@
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from django.db.models import Count
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
 
 from .forms import CampaignForm, CharacterForm, JournalEntryForm, RollForm
 from .models import Campaign, Character, JournalEntry, Roll, Ruleset
 from .services.dice import DiceExpressionError, roll_expression
+
+
+ROLL_PRESETS = {
+    'dnd-test': ('Test d20', '1d20'),
+    'dnd-attack': ('Atak d20', '1d20'),
+    'percentile-test': ('Test d100', '1d100'),
+    'year-zero-pool': ('Pula d6', '6d6'),
+    'vampire-pool': ('Pula Wampira', '5d10'),
+    'kult-test': ('Test Kult', '2d10'),
+}
 
 
 def landing(request):
@@ -17,7 +29,10 @@ def landing(request):
 @login_required
 def dashboard(request):
     characters = Character.objects.filter(owner=request.user).select_related('ruleset', 'campaign')
-    campaigns = Campaign.objects.filter(owner=request.user).select_related('ruleset')
+    active_character = characters.order_by('-updated_at').first()
+    campaigns = Campaign.objects.filter(owner=request.user).select_related('ruleset').annotate(
+        character_count=Count('characters')
+    )
     recent_rolls = Roll.objects.filter(user=request.user).select_related('ruleset', 'character')[:8]
     journal_entries = JournalEntry.objects.filter(user=request.user).select_related('campaign', 'character')[:5]
     roll_form = RollForm(user=request.user)
@@ -27,6 +42,7 @@ def dashboard(request):
         'rpg/dashboard.html',
         {
             'characters': characters,
+            'active_character': active_character,
             'campaigns': campaigns,
             'recent_rolls': recent_rolls,
             'journal_entries': journal_entries,
@@ -38,6 +54,9 @@ def dashboard(request):
 
 @login_required
 def campaign_create(request):
+    if not request.user.is_game_master:
+        messages.warning(request, 'Tworzenie kampanii jest dostępne w roli Mistrza Gry.')
+        return redirect('profile')
     form = CampaignForm(request.POST or None)
     if request.method == 'POST' and form.is_valid():
         campaign = form.save(commit=False)
@@ -46,6 +65,19 @@ def campaign_create(request):
         campaign.members.create(user=request.user, role='game_master')
         return redirect('dashboard')
     return render(request, 'rpg/campaign_form.html', {'form': form})
+
+
+@login_required
+def campaign_edit(request, pk):
+    if not request.user.is_game_master:
+        messages.warning(request, 'Edycja kampanii jest dostępna w roli Mistrza Gry.')
+        return redirect('campaign-detail', pk=pk)
+    campaign = get_object_or_404(Campaign, pk=pk, owner=request.user)
+    form = CampaignForm(request.POST or None, instance=campaign)
+    if request.method == 'POST' and form.is_valid():
+        form.save()
+        return redirect('campaign-detail', pk=campaign.pk)
+    return render(request, 'rpg/campaign_form.html', {'form': form, 'campaign': campaign})
 
 
 @login_required
@@ -123,7 +155,14 @@ def character_edit(request, pk):
 @login_required
 @require_POST
 def roll_create(request):
-    form = RollForm(request.POST, user=request.user)
+    data = request.POST.copy()
+    preset = data.get('preset')
+    if preset in ROLL_PRESETS:
+        preset_label, preset_expression = ROLL_PRESETS[preset]
+        data['expression'] = preset_expression
+        if not data.get('label'):
+            data['label'] = preset_label
+    form = RollForm(data, user=request.user)
     roll = None
     error = None
     if form.is_valid():

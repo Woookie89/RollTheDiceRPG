@@ -57,6 +57,15 @@ class CharacterViewSet(viewsets.ModelViewSet):
         else:
             serializer.save(owner=self.request.user)
 
+    def perform_update(self, serializer):
+        campaign = serializer.validated_data.get('campaign', serializer.instance.campaign)
+        if campaign and campaign.owner != self.request.user:
+            raise PermissionDenied('Możesz przypisywać postacie tylko do swoich kampanii.')
+        if campaign:
+            serializer.save(ruleset=campaign.ruleset)
+        else:
+            serializer.save()
+
     def retrieve(self, request, *args, **kwargs):
         character = self.get_object()
         if request.accepted_renderer.format in ['api', 'html']:

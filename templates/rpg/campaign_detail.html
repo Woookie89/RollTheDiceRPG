@@ -15,6 +15,9 @@
     </div>
     <div class="actions">
         <a class="button button-small" href="{% url 'character-create' %}">Dodaj postać</a>
+        {% if request.user.is_game_master %}
+            <a class="button button-small button-ghost" href="{% url 'campaign-edit' campaign.pk %}">Edytuj kampanię</a>
+        {% endif %}
         <a class="button button-small button-ghost" href="{% url 'dashboard' %}">Wróć do stołu</a>
     </div>
 </section>

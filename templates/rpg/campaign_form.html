@@ -1,15 +1,15 @@
 {% extends "base.html" %}
 
-{% block title %}Nowa kampania - Roll The Dice RPG{% endblock %}
+{% block title %}{% if campaign %}Edycja kampanii{% else %}Nowa kampania{% endif %} - Roll The Dice RPG{% endblock %}
 
 {% block content %}
 <section class="page-head">
     <p class="eyebrow">Kampania</p>
-    <h1>Nowa kampania</h1>
+    <h1>{% if campaign %}Edycja kampanii{% else %}Nowa kampania{% endif %}</h1>
 </section>
 <form class="panel form-panel" method="post">
     {% csrf_token %}
     {{ form.as_p }}
-    <button class="button" type="submit">Utwórz kampanię</button>
+    <button class="button" type="submit">{% if campaign %}Zapisz kampanię{% else %}Utwórz kampanię{% endif %}</button>
 </form>
 {% endblock %}

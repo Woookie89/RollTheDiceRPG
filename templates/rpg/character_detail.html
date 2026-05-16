@@ -54,6 +54,14 @@
         <form method="post" action="{% url 'roll-create' %}" hx-post="{% url 'roll-create' %}" hx-target="#roll-workspace" hx-swap="innerHTML">
             {% csrf_token %}
             {{ roll_form.as_p }}
+            <div class="preset-dice">
+                <button type="submit" name="preset" value="dnd-test">Test d20</button>
+                <button type="submit" name="preset" value="dnd-attack">Atak d20</button>
+                <button type="submit" name="preset" value="percentile-test">Test d100</button>
+                <button type="submit" name="preset" value="year-zero-pool">Pula d6</button>
+                <button type="submit" name="preset" value="vampire-pool">Wampir 5d10</button>
+                <button type="submit" name="preset" value="kult-test">Kult 2d10</button>
+            </div>
             <div class="quick-dice">
                 <button type="submit" name="expression" value="{{ character.data.default_expression|default:'1d20' }}">Preset</button>
                 <button type="submit" name="expression" value="1d20">d20</button>
