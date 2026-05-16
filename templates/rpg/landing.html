@@ -3,30 +3,53 @@
 {% block title %}Roll The Dice RPG{% endblock %}
 
 {% block content %}
-<section class="hero">
-    <div>
+<section class="hero hero-landing">
+    <div class="hero-copy">
         <p class="eyebrow">Wielosystemowy stół RPG</p>
         <h1>Karty postaci, rzuty i przygody w jednym miejscu.</h1>
         <p class="lead">Jeden rdzeń aplikacji, różne mechaniki: d20, testy procentowe, pule kości i testy narracyjne.</p>
-        <div class="actions">
+        <div class="actions hero-actions">
             <a class="button" href="{% url 'register' %}">Zacznij</a>
             <a class="button button-ghost" href="{% url 'login' %}">Mam konto</a>
         </div>
-    </div>
-    <div class="system-board">
-        {% for ruleset in rulesets %}
-            <article class="system-chip theme-{{ ruleset.theme }}">
-                <span>{{ ruleset.primary_die }}</span>
-                <strong>{{ ruleset.name }}</strong>
+        <div class="hero-note-grid">
+            <article class="hero-note">
+                <span>01</span>
+                <strong>Jedna karta, wiele systemów</strong>
+                <p>Model postaci jest elastyczny, więc interfejs nie rozsypuje sie przy zmianie mechaniki.</p>
             </article>
-        {% endfor %}
+            <article class="hero-note">
+                <span>02</span>
+                <strong>Szybki stol przy sesji</strong>
+                <p>Rzuty, historia i dziennik sa pod reka bez przeskakiwania miedzy przypadkowymi ekranami.</p>
+            </article>
+        </div>
     </div>
+    <aside class="system-board panel panel-spotlight">
+        <div class="board-head">
+            <p class="eyebrow">Gotowe systemy</p>
+            <h2>Mechaniki z wlasnym klimatem, wspolnym pulpitem.</h2>
+            <p class="board-copy">Kazdy system dostaje swoj charakter, ale nadal dziala w jednym, czytelnym kokpicie gracza.</p>
+        </div>
+        <div class="system-grid">
+            {% for ruleset in rulesets %}
+                <article class="system-chip" data-theme="{{ ruleset.theme }}">
+                    <div class="system-chip-copy">
+                        <strong>{{ ruleset.name }}</strong>
+                        <p>Presety rzutow, elastyczna karta i szybki dostep przy stole.</p>
+                    </div>
+                    <span>{{ ruleset.primary_die }}</span>
+                </article>
+            {% endfor %}
+        </div>
+    </aside>
 </section>
 
 <section class="roadmap-section">
     <div class="page-head">
         <p class="eyebrow">Mapa rozwoju</p>
         <h2>Najpierw wygodny stół gracza, potem narzędzia Mistrza Gry.</h2>
+        <p class="lead">Priorytetem jest przeplyw sesji: mniej szukania, mniej pazdzierza, wiecej czytelnych akcji i informacji.</p>
     </div>
     <div class="roadmap-grid">
         <article class="roadmap-card">
