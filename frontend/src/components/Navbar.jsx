@@ -1,4 +1,6 @@
 function Navbar({ loggedIn, handleLogout }) {
+    const isHomePage = window.location.pathname === '/';
+
     return (
         <header className="site-header">
             <nav className="site-nav" aria-label="Główna nawigacja">
@@ -10,7 +12,9 @@ function Navbar({ loggedIn, handleLogout }) {
                 </a>
 
                 <div className="nav-actions">
-                    <a href="/">Strona Główna</a>
+                    <a href="/" aria-current={isHomePage ? 'page' : undefined}>
+                        Strona Główna
+                    </a>
                     {loggedIn ? (
                         <button type="button" onClick={handleLogout}>
                             Wyloguj
