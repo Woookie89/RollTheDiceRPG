@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import './assets/css/tailwind.css';
 import MainPage from './components/MainPage';
 import Login from './components/Login';
 import Navbar from './components/Navbar';
