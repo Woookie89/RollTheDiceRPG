@@ -1,0 +1,66 @@
+<article class="character-card{% if variant %} character-card-{{ variant }}{% endif %}">
+    <div class="character-card-shell">
+        <div class="character-card-identity">
+            <div class="character-card-avatar">
+                {% if character.portrait %}
+                    <img src="{{ character.portrait.url }}" alt="{{ character.name }}">
+                {% else %}
+                    <span>{{ character.initials }}</span>
+                {% endif %}
+            </div>
+
+            <div class="character-card-copy">
+                <div class="character-card-headline">
+                    <p class="character-card-system">{{ character.ruleset.name }}</p>
+                    <h3>{{ character.name }}</h3>
+                </div>
+
+                <div class="character-card-meta">
+                    <span class="character-card-die">{{ character.ruleset.primary_die|default:"system" }}</span>
+                    {% if character.campaign %}
+                        <span class="character-card-tag">{{ character.campaign.name }}</span>
+                    {% else %}
+                        <span class="character-card-tag character-card-tag-muted">Solo</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        {% if character.summary_fields %}
+            <div class="character-card-stats">
+                {% for field in character.summary_fields %}
+                    <div class="character-card-stat">
+                        <span>{{ field.label }}</span>
+                        <strong>{{ field.value }}</strong>
+                    </div>
+                {% endfor %}
+            </div>
+        {% elif variant == 'featured' or variant == 'hero' %}
+            <div class="character-card-stats character-card-stats-fallback">
+                <div class="character-card-stat">
+                    <span>Tryb</span>
+                    <strong>{{ character.ruleset.primary_die|default:"Aktywny" }}</strong>
+                </div>
+                <div class="character-card-stat">
+                    <span>Kampania</span>
+                    <strong>{% if character.campaign %}{{ character.campaign.name }}{% else %}Solo{% endif %}</strong>
+                </div>
+                <div class="character-card-stat">
+                    <span>Aktualizacja</span>
+                    <strong>{{ character.updated_at|date:"d.m.Y" }}</strong>
+                </div>
+            </div>
+        {% endif %}
+
+        {% if character.notes and variant != 'featured' %}
+            <p class="character-card-notes">{{ character.notes|truncatechars:110 }}</p>
+        {% elif variant == 'featured' %}
+            <p class="character-card-notes">Najwazniejsze dane postaci sa od razu gotowe do gry przy stole, bez przeklikiwania przez formularze.</p>
+        {% endif %}
+
+        <div class="character-card-actions">
+            <a class="button button-small" href="{% url 'character-detail' character.pk %}">Otwórz kartę</a>
+            <a class="button button-small button-ghost" href="{% url 'character-edit' character.pk %}">Edytuj</a>
+        </div>
+    </div>
+</article>
