@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import axios from 'axios';
 import { UserContext } from '../context/UserContext';
 
@@ -31,7 +31,8 @@ function Profile() {
                             <strong>Email:</strong> {userData.email}
                         </div>
                         <div className="mb-4">
-                            <strong>Nazwa użytkownika:</strong> {userData.username}
+                            <strong>Nazwa użytkownika:</strong>{' '}
+                            {userData.username}
                         </div>
                     </>
                 ) : (

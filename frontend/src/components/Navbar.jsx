@@ -1,23 +1,20 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-
 function Navbar({ loggedIn, handleLogout }) {
     return (
         <nav className="bg-gray-800 px-8 py-4 flex justify-between">
             <div>
-                <Link to="/" className="text-white text-2xl font-bold">
+                <a href="/" className="text-white text-2xl font-bold">
                     Roll The Dice RPG
-                </Link>
+                </a>
             </div>
             <div>
                 {loggedIn ? (
                     <>
-                        <Link
-                            to="/"
+                        <a
+                            href="/"
                             className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
                         >
                             Strona Główna
-                        </Link>
+                        </a>
                         <button
                             onClick={handleLogout}
                             className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
@@ -27,18 +24,18 @@ function Navbar({ loggedIn, handleLogout }) {
                     </>
                 ) : (
                     <>
-                        <Link
-                            to="/"
+                        <a
+                            href="/"
                             className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
                         >
                             Strona Główna
-                        </Link>
-                        <Link
-                            to="/login"
+                        </a>
+                        <a
+                            href="/login"
                             className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
                         >
                             Zaloguj
-                        </Link>
+                        </a>
                     </>
                 )}
             </div>

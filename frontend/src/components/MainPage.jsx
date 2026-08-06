@@ -1,6 +1,3 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-
 function MainPage() {
     return (
         <div className="flex flex-col items-center justify-center h-screen">
@@ -10,18 +7,18 @@ function MainPage() {
                 wykorzystująca mechanikę D&amp;D
             </p>
             <div className="text-center">
-                <Link
-                    to="/login"
+                <a
+                    href="/login"
                     className="px-4 py-2 rounded-md bg-blue-500 text-white mr-4"
                 >
                     Log in
-                </Link>
-                <Link
-                    to="/register"
+                </a>
+                <a
+                    href="/register"
                     className="px-4 py-2 rounded-md bg-green-500 text-white"
                 >
                     Sign up
-                </Link>
+                </a>
             </div>
             <hr className="w-1/2 border-gray-300 my-8" />
             <div className="max-w-md">

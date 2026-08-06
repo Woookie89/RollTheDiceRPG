@@ -1,17 +1,17 @@
 import React, { useContext, useEffect } from 'react';
 import { UserContext } from '../context/UserContext';
-import { useNavigate } from 'react-router-dom';
 
 function Logout() {
     const { handleLogout } = useContext(UserContext);
-    const navigate = useNavigate();
 
     useEffect(() => {
-        setTimeout(() => {
+        const redirectTimer = setTimeout(() => {
             handleLogout();
-            navigate('/');
+            window.location.assign('/');
         }, 5000);
-    }, [handleLogout, navigate]);
+
+        return () => clearTimeout(redirectTimer);
+    }, [handleLogout]);
 
     return (
         <div className="flex flex-col items-center justify-center h-screen">
@@ -23,7 +23,7 @@ function Logout() {
             <button
                 onClick={() => {
                     handleLogout();
-                    navigate('/');
+                    window.location.assign('/');
                 }}
                 className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
             >
