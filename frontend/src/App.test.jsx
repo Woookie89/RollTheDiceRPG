@@ -6,6 +6,6 @@ test('renders the application landing page', () => {
     render(<App />);
 
     expect(
-        screen.getByRole('heading', { name: /roll the dice rpg/i }),
+        screen.getByRole('heading', { name: /każda sesja ma swoje miejsce/i }),
     ).toBeInTheDocument();
 });

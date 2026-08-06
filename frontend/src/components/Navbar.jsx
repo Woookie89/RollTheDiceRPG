@@ -1,45 +1,28 @@
 function Navbar({ loggedIn, handleLogout }) {
     return (
-        <nav className="bg-gray-800 px-8 py-4 flex justify-between">
-            <div>
-                <a href="/" className="text-white text-2xl font-bold">
-                    Roll The Dice RPG
+        <header className="site-header">
+            <nav className="site-nav" aria-label="Główna nawigacja">
+                <a href="/" className="brand-link" aria-label="Roll The Dice RPG">
+                    <span className="brand-mark" aria-hidden="true">
+                        20
+                    </span>
+                    <span>Roll The Dice RPG</span>
                 </a>
-            </div>
-            <div>
-                {loggedIn ? (
-                    <>
-                        <a
-                            href="/"
-                            className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
-                        >
-                            Strona Główna
-                        </a>
-                        <button
-                            onClick={handleLogout}
-                            className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
-                        >
+
+                <div className="nav-actions">
+                    <a href="/">Strona Główna</a>
+                    {loggedIn ? (
+                        <button type="button" onClick={handleLogout}>
                             Wyloguj
                         </button>
-                    </>
-                ) : (
-                    <>
-                        <a
-                            href="/"
-                            className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
-                        >
-                            Strona Główna
-                        </a>
-                        <a
-                            href="/login"
-                            className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
-                        >
+                    ) : (
+                        <a href="/login" className="nav-login">
                             Zaloguj
                         </a>
-                    </>
-                )}
-            </div>
-        </nav>
+                    )}
+                </div>
+            </nav>
+        </header>
     );
 }
 
