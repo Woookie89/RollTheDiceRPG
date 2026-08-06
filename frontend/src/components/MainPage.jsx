@@ -1,6 +1,10 @@
 import { useState } from 'react';
-
-const dice = [4, 6, 8, 10, 12, 20];
+import {
+    addRollToHistory,
+    DICE_SIDES,
+    MAX_ROLL_HISTORY,
+    rollDie,
+} from '../utils/dice';
 
 function QuickRoll() {
     const [die, setDie] = useState(20);
@@ -9,20 +13,28 @@ function QuickRoll() {
     const [rollId, setRollId] = useState(0);
 
     const roll = () => {
-        const nextResult = Math.floor(Math.random() * die) + 1;
+        const nextResult = rollDie(die);
+        const nextRollId = rollId + 1;
 
         setResult(nextResult);
-        setHistory(current => [
-            { die, result: nextResult, id: rollId + 1 },
-            ...current,
-        ].slice(0, 4));
+        setHistory(current =>
+            addRollToHistory(
+                current,
+                { die, result: nextResult, id: nextRollId },
+                MAX_ROLL_HISTORY,
+            ),
+        );
         setRollId(current => current + 1);
+    };
+
+    const clearHistory = () => {
+        setHistory([]);
     };
 
     return (
         <div className="roll-console" aria-label="Rzut próbny">
             <div className="die-selector" aria-label="Wybierz rodzaj kości">
-                {dice.map(sides => (
+                {DICE_SIDES.map(sides => (
                     <button
                         key={sides}
                         type="button"
@@ -46,7 +58,14 @@ function QuickRoll() {
             </div>
 
             <div className="roll-history">
-                <span>Ostatnie rzuty</span>
+                <div>
+                    <span>Ostatnie rzuty</span>
+                    {history.length > 0 && (
+                        <button type="button" onClick={clearHistory}>
+                            Wyczyść historię
+                        </button>
+                    )}
+                </div>
                 {history.length > 0 ? (
                     <ol>
                         {history.map(item => (
