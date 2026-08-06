@@ -1,22 +1,30 @@
-# from django import forms
-# from django.contrib.auth.forms import UserCreationForm, UserChangeForm
-# from .models import CustomUser
+from django import forms
+from django.contrib.auth.forms import UserChangeForm, UserCreationForm
 
-# class CustomUserCreationForm(UserCreationForm):
-#     password2 = forms.CharField(label='Confirm password', widget=forms.PasswordInput)
+from .models import CustomUser
 
-#     class Meta:
-#         model = CustomUser
-#         fields = ('username', 'email', 'password1', 'password2', 'avatar',)
 
-#     def save(self, commit=True):
-#         user = super().save(commit=False)
-#         user.set_password(self.cleaned_data["password1"])
-#         if commit:
-#             user.save()
-#         return user
+class CustomUserCreationForm(UserCreationForm):
+    class Meta(UserCreationForm.Meta):
+        model = CustomUser
+        fields = ('username', 'email', 'avatar', 'profile_role')
 
-# class CustomUserChangeForm(UserChangeForm):
-#     class Meta:
-#         model = CustomUser
-#         fields = ('username', 'email', 'avatar', 'password',)
+
+class CustomUserChangeForm(UserChangeForm):
+    class Meta:
+        model = CustomUser
+        fields = ('username', 'email', 'avatar', 'first_name', 'last_name', 'profile_role', 'password')
+
+
+class CustomUserProfileForm(forms.ModelForm):
+    class Meta:
+        model = CustomUser
+        fields = ('username', 'email', 'first_name', 'last_name', 'avatar', 'profile_role')
+        labels = {
+            'username': 'Nazwa użytkownika',
+            'email': 'Email',
+            'first_name': 'Imię',
+            'last_name': 'Nazwisko',
+            'avatar': 'Avatar',
+            'profile_role': 'Rola przy stole',
+        }

@@ -1,0 +1,13 @@
+{% if error %}
+    <div class="alert">{{ error }}</div>
+{% elif roll %}
+    <article class="roll-card">
+        <p class="roll-card-label">{{ roll.label|default:roll.expression }}</p>
+        <strong>{{ roll.total }}</strong>
+        <span class="roll-card-meta">
+            Kości: {{ roll.result.rolls|join:", " }}
+            {% if roll.result.modifier %} / modyfikator {{ roll.result.modifier }}{% endif %}
+            {% if roll.context %} / {{ roll.context }}{% endif %}
+        </span>
+    </article>
+{% endif %}
