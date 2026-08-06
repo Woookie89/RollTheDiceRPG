@@ -4,6 +4,23 @@ from django.urls import reverse
 
 
 class UserAuthTests(TestCase):
+    def test_login_page_renders_dedicated_form(self):
+        response = self.client.get(reverse('login'))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Twoja kampania czeka.')
+        self.assertContains(response, 'Nazwa użytkownika')
+        self.assertContains(response, 'Wejdź do gry')
+
+    def test_login_page_shows_clear_error_for_invalid_credentials(self):
+        response = self.client.post(
+            reverse('login'),
+            {'username': 'nieznany', 'password': 'bledne-haslo'},
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Nie udało się zalogować.')
+
     def test_user_password_is_hashed_once(self):
         user = get_user_model().objects.create_user(username='player', password='strong-pass-123')
 

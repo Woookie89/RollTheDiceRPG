@@ -3,16 +3,71 @@
 {% block title %}Logowanie - Roll The Dice RPG{% endblock %}
 
 {% block content %}
-<section class="auth-layout">
-    <div class="auth-copy">
+<section class="login-layout" aria-labelledby="login-heading">
+    <div class="auth-copy login-copy">
         <p class="eyebrow">Powrót do stołu</p>
-        <h1>Wybierz postać, rzuć kością i ruszaj dalej.</h1>
-        <p class="lead">Logowanie ma byc szybkie i czytelne, bez wpychania formularza w przypadkowy fragment ekranu.</p>
+        <h1 id="login-heading">Twoja kampania czeka.</h1>
+        <p class="lead">Wróć do postaci, ostatnich rzutów i notatek z sesji. Wszystko jest dokładnie tam, gdzie to zostawiłeś.</p>
+
+        <div class="login-features" aria-label="Co znajdziesz po zalogowaniu">
+            <div>
+                <span>01</span>
+                <p><strong>Karty postaci</strong> z najważniejszymi statystykami pod ręką.</p>
+            </div>
+            <div>
+                <span>02</span>
+                <p><strong>Szybkie rzuty</strong> i czytelna historia wyników.</p>
+            </div>
+            <div>
+                <span>03</span>
+                <p><strong>Kampanie i dziennik</strong> uporządkowane w jednym miejscu.</p>
+            </div>
+        </div>
     </div>
-    <form class="panel form-panel auth-form-panel" method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button class="button" type="submit">Zaloguj się</button>
-    </form>
+
+    <div class="panel login-panel">
+        <header class="login-panel-head">
+            <div>
+                <p class="eyebrow">Panel gracza</p>
+                <h2>Zaloguj się</h2>
+            </div>
+            <span class="login-status"><i aria-hidden="true"></i> stół online</span>
+        </header>
+
+        <form class="form-panel login-form" method="post" novalidate>
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+                <div class="auth-error" role="alert">
+                    <strong>Nie udało się zalogować.</strong>
+                    <p>Sprawdź nazwę użytkownika i hasło, a następnie spróbuj ponownie.</p>
+                </div>
+            {% endif %}
+
+            <div class="form-field{% if form.username.errors %} has-error{% endif %}">
+                <label for="{{ form.username.id_for_label }}">Nazwa użytkownika</label>
+                {{ form.username }}
+                {% for error in form.username.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
+            </div>
+
+            <div class="form-field{% if form.password.errors %} has-error{% endif %}">
+                <label for="{{ form.password.id_for_label }}">Hasło</label>
+                {{ form.password }}
+                {% for error in form.password.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
+            </div>
+
+            {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+
+            <button class="button login-submit" type="submit">
+                <span>Wejdź do gry</span>
+                <span aria-hidden="true">→</span>
+            </button>
+        </form>
+
+        <footer class="login-panel-foot">
+            <span>Nie masz jeszcze konta?</span>
+            <a href="{% url 'register' %}">Utwórz profil</a>
+        </footer>
+    </div>
 </section>
 {% endblock %}
